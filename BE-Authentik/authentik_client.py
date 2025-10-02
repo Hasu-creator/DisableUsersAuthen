@@ -1,3 +1,4 @@
+#authentik_client.py
 import requests
 import urllib3
 
@@ -24,8 +25,6 @@ def test_authentication():
     print("🧪 Testing Bearer format...")
     try:
         response = requests.get(test_url, headers=API_HEADERS_BEARER, verify=False)
-        print(f"   Status: {response.status_code}")
-        print(f"   Response: {response.text[:100]}")
         if response.status_code == 200:
             print("   ✅ Bearer format WORKS!")
             return API_HEADERS_BEARER
@@ -35,8 +34,6 @@ def test_authentication():
     print("\n🧪 Testing Token format...")
     try:
         response = requests.get(test_url, headers=API_HEADERS_TOKEN, verify=False)
-        print(f"   Status: {response.status_code}")
-        print(f"   Response: {response.text[:100]}")
         if response.status_code == 200:
             print("   ✅ Token format WORKS!")
             return API_HEADERS_TOKEN
@@ -46,12 +43,7 @@ def test_authentication():
     print("\n❌ Both authentication methods failed!")
     return None
 
-# Test khi import module
-print("=" * 60)
-print("Testing Authentik Authentication...")
-print("=" * 60)
 WORKING_HEADERS = test_authentication()
-print("=" * 60)
 
 def get_all_users_from_authentik():
     if not WORKING_HEADERS:
@@ -85,39 +77,61 @@ def disable_user_in_authentik(username):
     if not WORKING_HEADERS:
         return False, "Authentication failed. Please check your API token."
     
+    # Tìm user
     search_url = f"{AUTHENTIK_URL}/api/v3/core/users/?username={username}"
-    
     try:
         response = requests.get(search_url, headers=WORKING_HEADERS, verify=False) 
         response.raise_for_status() 
-        
         data = response.json()
         
         if not data['results']:
             print(f"❌ Không tìm thấy người dùng với username '{username}'")
             return False, "User not found"
         
-        user_pk = data['results'][0]['pk']
+        user = data['results'][0]
+        user_pk = user['pk']
         print(f"✅ Tìm thấy User ID: {user_pk}")
 
     except requests.exceptions.RequestException as e:
         print(f"❌ Lỗi khi tìm kiếm User: {e}")
         return False, f"API Search Error: {e}"
 
+    # Disable user
     update_url = f"{AUTHENTIK_URL}/api/v3/core/users/{user_pk}/"
     update_data = {"is_active": False}
-    
     try:
         response = requests.patch(update_url, headers=WORKING_HEADERS, json=update_data, verify=False)
         response.raise_for_status()
-        
-        if response.json().get('is_active') is False:
-            print(f"✅ Vô hiệu hóa thành công tài khoản '{username}'")
-            return True, f"User '{username}' successfully disabled."
-        else:
-            print(f"⚠️ Cập nhật thành công nhưng trạng thái is_active không phải False.")
-            return True, "Update successful, but check status."
-
+        print(f"✅ Set is_active=False cho {username}")
     except requests.exceptions.RequestException as e:
-        print(f"❌ Lỗi khi vô hiệu hóa User: {e}")
         return False, f"API Update Error: {e}"
+
+    # Xoá session của user
+    try:
+        session_url = f"{AUTHENTIK_URL}/api/v3/core/sessions/?user={user_pk}"
+        resp_sessions = requests.get(session_url, headers=WORKING_HEADERS, verify=False)
+        if resp_sessions.status_code == 200:
+            sessions = resp_sessions.json().get("results", [])
+            for s in sessions:
+                sid = s["id"]
+                del_url = f"{AUTHENTIK_URL}/api/v3/core/sessions/{sid}/"
+                requests.delete(del_url, headers=WORKING_HEADERS, verify=False)
+            print(f"🗑 Xoá {len(sessions)} session cho user {username}")
+    except Exception as e:
+        print(f"⚠️ Lỗi xoá sessions: {e}")
+
+    # Xoá token OAuth cho user
+    try:
+        token_url = f"{AUTHENTIK_URL}/api/v3/core/tokens/?user={user_pk}"
+        resp_tokens = requests.get(token_url, headers=WORKING_HEADERS, verify=False)
+        if resp_tokens.status_code == 200:
+            tokens = resp_tokens.json().get("results", [])
+            for t in tokens:
+                tid = t["pk"]
+                del_url = f"{AUTHENTIK_URL}/api/v3/core/tokens/{tid}/"
+                requests.delete(del_url, headers=WORKING_HEADERS, verify=False)
+            print(f"🗑 Xoá {len(tokens)} token cho user {username}")
+    except Exception as e:
+        print(f"⚠️ Lỗi xoá tokens: {e}")
+
+    return True, f"User '{username}' disabled, sessions and tokens revoked."

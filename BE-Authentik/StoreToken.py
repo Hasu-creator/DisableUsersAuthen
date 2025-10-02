@@ -1,3 +1,4 @@
+#StoreToken.py
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from waitress import serve
@@ -49,5 +50,4 @@ def health_check():
 
 if __name__ == '__main__':
     print("Starting Waitress server on http://0.0.0.0:5000")
-    print("CORS enabled for: http://localhost:3000, http://localhost:5173")
     serve(app, host='0.0.0.0', port=5000)
