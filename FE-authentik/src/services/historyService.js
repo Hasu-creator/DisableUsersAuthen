@@ -1,4 +1,3 @@
-// src/services/historyService.js
 const HISTORY_KEY = 'disableHistory';
 const MAX_HISTORY_RECORDS = 50;
 

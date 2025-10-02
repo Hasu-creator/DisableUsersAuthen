@@ -1,4 +1,3 @@
-// src/components/DisableHistory.jsx
 import React from 'react';
 import { Clock } from 'lucide-react';
 

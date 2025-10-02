@@ -1,4 +1,3 @@
-// src/components/UserTable.jsx
 import React from 'react';
 import { UserX, Loader2, Users } from 'lucide-react';
 

@@ -1,4 +1,3 @@
-// src/components/ConfirmDisableModal.jsx
 import React, { useState } from 'react';
 import { AlertCircle, UserX, Loader2, Calendar, FileText } from 'lucide-react';
 
