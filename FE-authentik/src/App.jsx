@@ -51,9 +51,9 @@ function App() {
       const data = await userAPI.getAllUsers();
       setUsers(data);
       setFilteredUsers(data);
-      showNotification('success', `Đã tải ${data.length} tài khoản đang hoạt động`);
+      showNotification('success', `Đã tải thành công ${data.length} tài khoản đang hoạt động`);
     } catch (error) {
-      showNotification('error', error.message || 'Lỗi kết nối đến server');
+      showNotification('error', error.message || 'Không thể kết nối đến server. Vui lòng kiểm tra lại.');
     } finally {
       setLoading(false);
     }
@@ -69,7 +69,7 @@ function App() {
     try {
       await userAPI.disableUser(data.username);
       
-      showNotification('success', `✓ Đã vô hiệu hóa tài khoản "${data.username}" thành công`);
+      showNotification('success', `Đã vô hiệu hóa tài khoản "${data.username}" thành công. Nhân viên không thể đăng nhập vào hệ thống.`);
       
       // Lưu vào lịch sử
       const historyRecord = {
@@ -90,7 +90,7 @@ function App() {
       setShowModal(false);
       setSelectedUser(null);
     } catch (error) {
-      showNotification('error', `Lỗi: ${error.message}`);
+      showNotification('error', `Không thể vô hiệu hóa tài khoản: ${error.message}`);
     } finally {
       setIsProcessing(false);
     }
@@ -101,22 +101,39 @@ function App() {
     setSelectedUser(null);
   };
 
+  const handleExportHistory = () => {
+    historyService.exportHistory();
+    showNotification('success', 'Đã xuất lịch sử thành công. Kiểm tra file tải về.');
+  };
+
   const showNotification = (type, message) => {
     setNotification({ type, message });
-    setTimeout(() => setNotification(null), 5000);
+    setTimeout(() => setNotification(null), 6000);
+  };
+
+  const closeNotification = () => {
+    setNotification(null);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
-        <Header onRefresh={fetchUsers} loading={loading} />
+        <Header 
+          onRefresh={fetchUsers} 
+          loading={loading}
+          userCount={users.length}
+        />
         
         <Notification 
           type={notification?.type} 
-          message={notification?.message} 
+          message={notification?.message}
+          onClose={closeNotification}
         />
         
-        <DisableHistory history={disableHistory} />
+        <DisableHistory 
+          history={disableHistory}
+          onExport={handleExportHistory}
+        />
         
         <SearchBar 
           searchTerm={searchTerm}
@@ -133,9 +150,26 @@ function App() {
         />
 
         {/* Footer */}
-        <div className="mt-6 text-center text-sm text-gray-600 bg-white rounded-lg shadow p-4">
-          <p>
-            ⚠️ <strong>Lưu ý:</strong> Chỉ vô hiệu hóa tài khoản khi nhân viên đã hoàn tất đầy đủ thủ tục nghỉ việc và bàn giao công việc.
+        <div className="mt-8 text-center">
+          <div className="inline-block bg-white rounded-2xl shadow-lg border border-gray-100 px-8 py-6 max-w-3xl">
+            <div className="flex items-start gap-4">
+              <div className="bg-amber-100 p-2 rounded-lg flex-shrink-0">
+                <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <div className="text-left">
+                <p className="font-bold text-gray-800 text-lg mb-2">Lưu ý quan trọng</p>
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  Chỉ vô hiệu hóa tài khoản khi nhân viên đã hoàn tất <strong>đầy đủ thủ tục nghỉ việc</strong> và 
+                  <strong> bàn giao công việc</strong>. Đảm bảo đã kiểm tra kỹ thông tin trước khi thực hiện.
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <p className="text-gray-500 text-xs mt-4">
+            © 2025 Hệ thống quản lý tài khoản - Phòng Nhân sự
           </p>
         </div>
       </div>

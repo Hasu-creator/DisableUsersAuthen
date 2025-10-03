@@ -1,4 +1,3 @@
-#authentik_client.py
 import requests
 import urllib3
 
@@ -101,7 +100,22 @@ def disable_user_in_authentik(username):
     update_data = {"is_active": False}
     try:
         response = requests.patch(update_url, headers=WORKING_HEADERS, json=update_data, verify=False)
+        response = requests.patch(update_url, headers=WORKING_HEADERS, json=update_data, verify=False)
+        print(f"📊 Response Status: {response.status_code}")
+        print(f"📄 Response Body: {response.text[:200]}")  # In 200 ký tự đầu
+        
+        if response.status_code == 403:
+            print("❌ LỖI 403: Token không có quyền 'Change User'!")
+            return False, "Permission denied. Token needs 'Change User' permission."
         response.raise_for_status()
+        verify_response = requests.get(search_url, headers=WORKING_HEADERS, verify=False)
+        user_status = verify_response.json()['results'][0]['is_active']
+        print(f"🔍 Verify: is_active = {user_status}")
+        
+        if user_status == False:
+            print(f"✅ XÁC NHẬN: User {username} đã bị deactivate!")
+        else:
+            print(f"⚠️ CẢNH BÁO: is_active vẫn là True!")
         print(f"✅ Set is_active=False cho {username}")
     except requests.exceptions.RequestException as e:
         return False, f"API Update Error: {e}"
