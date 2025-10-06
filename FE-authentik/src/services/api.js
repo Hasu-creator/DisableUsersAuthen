@@ -1,3 +1,4 @@
+// src/services/api.js
 const API_BASE_URL = 'http://localhost:5000/api';
 
 export const userAPI = {
@@ -11,6 +12,20 @@ export const userAPI = {
       return await response.json();
     } catch (error) {
       console.error('Error fetching users:', error);
+      throw error;
+    }
+  },
+
+  // Lấy danh sách người dùng đã bị deactivate
+  getInactiveUsers: async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/inactive`);
+      if (!response.ok) {
+        throw new Error('Không thể tải danh sách người dùng inactive');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching inactive users:', error);
       throw error;
     }
   },
@@ -35,6 +50,30 @@ export const userAPI = {
       return result;
     } catch (error) {
       console.error('Error disabling user:', error);
+      throw error;
+    }
+  },
+
+  // Kích hoạt lại tài khoản người dùng
+  activateUser: async (username) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/activate_user`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username }),
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Không thể kích hoạt tài khoản');
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('Error activating user:', error);
       throw error;
     }
   }
