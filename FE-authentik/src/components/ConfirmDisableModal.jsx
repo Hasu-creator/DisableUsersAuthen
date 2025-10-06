@@ -15,6 +15,13 @@ export default function ConfirmDisableModal({ user, onConfirm, onCancel, isProce
     { value: 'Khác', icon: '📝' }
   ];
 
+  // Tính toán ngày tối đa (2 tháng sau)
+  const getMaxDate = () => {
+    const maxDate = new Date();
+    maxDate.setMonth(maxDate.getMonth() + 2);
+    return maxDate.toISOString().split('T')[0];
+  };
+
   const handleSubmit = () => {
     if (!reason) {
       alert('Vui lòng chọn lý do nghỉ việc');
@@ -110,10 +117,13 @@ export default function ConfirmDisableModal({ user, onConfirm, onCancel, isProce
               type="date"
               value={resignDate}
               onChange={(e) => setResignDate(e.target.value)}
-              max={new Date().toISOString().split('T')[0]}
+              max={getMaxDate()}
               className="w-full px-6 py-4 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 outline-none transition-all duration-200 text-gray-900 font-medium"
               required
             />
+            <p className="text-xs text-gray-500 mt-2">
+              💡 Có thể chọn ngày trong tương lai (tối đa 2 tháng) cho trường hợp nghỉ việc theo lịch
+            </p>
           </div>
 
           {/* Reason */}
@@ -180,7 +190,7 @@ export default function ConfirmDisableModal({ user, onConfirm, onCancel, isProce
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-red-500 font-bold flex-shrink-0">•</span>
-                    <span>Hành động này <strong>không thể hoàn tác tự động</strong></span>
+                    <span>Hành động này được <strong>ghi lại trong lịch sử</strong></span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-red-500 font-bold flex-shrink-0">•</span>

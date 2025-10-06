@@ -1,4 +1,4 @@
-const HISTORY_KEY = 'disableHistory';
+const HISTORY_KEY = 'accountHistory';
 const MAX_HISTORY_RECORDS = 50;
 
 export const historyService = {
@@ -13,19 +13,42 @@ export const historyService = {
     }
   },
 
-  // Thêm record mới vào lịch sử
-  addRecord: (record) => {
+  // Thêm record vô hiệu hóa vào lịch sử
+  addDisableRecord: (record) => {
     try {
       const history = historyService.getHistory();
-      history.unshift(record); // Thêm vào đầu mảng
+      const newRecord = {
+        ...record,
+        action: 'disable',
+        actionTime: record.processedAt || new Date().toISOString()
+      };
+      history.unshift(newRecord);
       
-      // Giới hạn số lượng records
       const limitedHistory = history.slice(0, MAX_HISTORY_RECORDS);
-      
       localStorage.setItem(HISTORY_KEY, JSON.stringify(limitedHistory));
       return limitedHistory;
     } catch (error) {
-      console.error('Error saving history:', error);
+      console.error('Error saving disable history:', error);
+      return [];
+    }
+  },
+
+  // Thêm record kích hoạt lại vào lịch sử
+  addActivateRecord: (record) => {
+    try {
+      const history = historyService.getHistory();
+      const newRecord = {
+        ...record,
+        action: 'activate',
+        actionTime: record.activatedAt || new Date().toISOString()
+      };
+      history.unshift(newRecord);
+      
+      const limitedHistory = history.slice(0, MAX_HISTORY_RECORDS);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(limitedHistory));
+      return limitedHistory;
+    } catch (error) {
+      console.error('Error saving activate history:', error);
       return [];
     }
   },
@@ -50,7 +73,7 @@ export const historyService = {
     
     const link = document.createElement('a');
     link.href = url;
-    link.download = `disable-history-${new Date().toISOString().split('T')[0]}.json`;
+    link.download = `account-history-${new Date().toISOString().split('T')[0]}.json`;
     link.click();
     
     URL.revokeObjectURL(url);

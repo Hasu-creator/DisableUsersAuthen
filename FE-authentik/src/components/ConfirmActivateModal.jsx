@@ -1,4 +1,3 @@
-// src/components/ConfirmActivateModal.jsx
 import React, { useState } from 'react';
 import { CheckCircle, UserCheck, Loader2, X, User, Mail, Shield, AlertCircle } from 'lucide-react';
 

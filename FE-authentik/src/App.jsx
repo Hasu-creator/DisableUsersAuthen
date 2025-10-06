@@ -1,4 +1,3 @@
-// src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { Users, Ban } from 'lucide-react';
 import Header from './components/Header';
@@ -14,7 +13,7 @@ import { historyService } from './services/historyService';
 import './App.css';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('active'); // 'active' | 'inactive'
+  const [activeTab, setActiveTab] = useState('active');
   const [users, setUsers] = useState([]);
   const [inactiveUsers, setInactiveUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -25,7 +24,7 @@ function App() {
   const [showActivateModal, setShowActivateModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [disableHistory, setDisableHistory] = useState([]);
+  const [history, setHistory] = useState([]);
 
   // Load users và history khi component mount
   useEffect(() => {
@@ -55,9 +54,9 @@ function App() {
   }, [searchTerm, users, inactiveUsers, activeTab]);
 
   const loadHistory = () => {
-    const history = historyService.getHistory();
-    setDisableHistory(history);
-  };
+  const historyData = historyService.getHistory();
+  setHistory(historyData);
+};
 
   const fetchAllData = async () => {
     setLoading(true);
@@ -95,31 +94,27 @@ function App() {
       
       showNotification('success', `Đã vô hiệu hóa tài khoản "${data.username}" thành công. Nhân viên không thể đăng nhập vào hệ thống.`);
       
-      // Lưu vào lịch sử
+      // Lưu vào lịch sử với action = 'disable'
       const historyRecord = {
         ...selectedUser,
         reason: data.reason,
         note: data.note,
         resignDate: data.resignDate,
-        processedAt: data.processedAt
+        processedAt: data.processedAt,
+        action: 'disable'
       };
       
-      const updatedHistory = historyService.addRecord(historyRecord);
-      setDisableHistory(updatedHistory);
+      const updatedHistory = historyService.addDisableRecord(historyRecord);
+      setHistory(updatedHistory);
       
-      // Xóa user khỏi danh sách active
       setUsers(prev => prev.filter(u => u.username !== data.username));
       
-      // Đóng modal
       setShowDisableModal(false);
       setSelectedUser(null);
     } catch (error) {
       showNotification('error', `Không thể vô hiệu hóa tài khoản: ${error.message}`);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
+    } 
+  }
   const handleConfirmActivate = async (data) => {
     setIsProcessing(true);
     try {
@@ -127,10 +122,19 @@ function App() {
       
       showNotification('success', `Đã kích hoạt lại tài khoản "${data.username}" thành công. Nhân viên có thể đăng nhập vào hệ thống.`);
       
-      // Xóa user khỏi danh sách inactive
+      // Lưu vào lịch sử với action = 'activate'
+      const historyRecord = {
+        ...selectedUser,
+        note: data.note,
+        activatedAt: data.activatedAt,
+        action: 'activate'
+      };
+      
+      const updatedHistory = historyService.addActivateRecord(historyRecord);
+      setHistory(updatedHistory);
+      
       setInactiveUsers(prev => prev.filter(u => u.username !== data.username));
       
-      // Đóng modal
       setShowActivateModal(false);
       setSelectedUser(null);
     } catch (error) {
@@ -176,7 +180,7 @@ function App() {
         />
         
         <DisableHistory 
-          history={disableHistory}
+          history={history}  // ✅ Truyền history thay vì disableHistory
           onExport={handleExportHistory}
         />
 
