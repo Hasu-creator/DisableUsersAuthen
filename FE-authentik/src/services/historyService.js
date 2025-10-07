@@ -1,4 +1,4 @@
-const HISTORY_KEY = 'accountHistory';
+const HISTORY_KEY = 'accountHistory'; // Đổi tên key cho phù hợp
 const MAX_HISTORY_RECORDS = 50;
 
 export const historyService = {

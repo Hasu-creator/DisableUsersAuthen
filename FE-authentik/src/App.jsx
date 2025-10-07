@@ -7,6 +7,7 @@ import UserTable from './components/UserTable';
 import InactiveUserTable from './components/InactiveUserTable';
 import ConfirmDisableModal from './components/ConfirmDisableModal';
 import ConfirmActivateModal from './components/ConfirmActivateModal';
+import EditUserModal from './components/EditUserModal';
 import DisableHistory from './components/DisableHistory';
 import { userAPI } from './services/api';
 import { historyService } from './services/historyService';
@@ -22,6 +23,7 @@ function App() {
   const [notification, setNotification] = useState(null);
   const [showDisableModal, setShowDisableModal] = useState(false);
   const [showActivateModal, setShowActivateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [history, setHistory] = useState([]);
@@ -54,9 +56,9 @@ function App() {
   }, [searchTerm, users, inactiveUsers, activeTab]);
 
   const loadHistory = () => {
-  const historyData = historyService.getHistory();
-  setHistory(historyData);
-};
+    const historyData = historyService.getHistory();
+    setHistory(historyData);
+  };
 
   const fetchAllData = async () => {
     setLoading(true);
@@ -87,6 +89,11 @@ function App() {
     setShowActivateModal(true);
   };
 
+  const handleEditClick = (user) => {
+    setSelectedUser(user);
+    setShowEditModal(true);
+  };
+
   const handleConfirmDisable = async (data) => {
     setIsProcessing(true);
     try {
@@ -113,8 +120,11 @@ function App() {
       setSelectedUser(null);
     } catch (error) {
       showNotification('error', `Không thể vô hiệu hóa tài khoản: ${error.message}`);
-    } 
-  }
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const handleConfirmActivate = async (data) => {
     setIsProcessing(true);
     try {
@@ -144,9 +154,57 @@ function App() {
     }
   };
 
+  const handleConfirmEdit = async (data) => {
+    setIsProcessing(true);
+    try {
+    // Chỉ gửi name thuần túy, không có (username)
+    const nameOnly = data.name.includes('(') 
+      ? data.name.split('(')[0].trim() 
+      : data.name;
+    
+    const updatedUser = await userAPI.editUser(data.username, {
+      name: nameOnly,  // ✅ Gửi name thuần túy
+      email: data.email
+    });
+      
+      showNotification('success', `Đã cập nhật thông tin tài khoản "${data.username}" thành công.`);
+      
+      // Cập nhật user trong danh sách
+      if (activeTab === 'active') {
+      setUsers(prev => prev.map(u => 
+        u.username === data.username 
+          ? { 
+              ...u, 
+              name: `${updatedUser.name} (${updatedUser.username})`,  // ✅ Format lại
+              email: updatedUser.email 
+            }
+          : u
+      ));
+    } else {
+      setInactiveUsers(prev => prev.map(u => 
+        u.username === data.username 
+          ? { 
+              ...u, 
+              name: `${updatedUser.name} (${updatedUser.username})`,  // ✅ Format lại
+              email: updatedUser.email 
+            }
+          : u
+      ));
+    }
+      
+      setShowEditModal(false);
+    setSelectedUser(null);
+  } catch (error) {
+    showNotification('error', `Không thể cập nhật tài khoản: ${error.message}`);
+  } finally {
+    setIsProcessing(false);
+  }
+};
+
   const handleCancelModal = () => {
     setShowDisableModal(false);
     setShowActivateModal(false);
+    setShowEditModal(false);
     setSelectedUser(null);
   };
 
@@ -180,7 +238,7 @@ function App() {
         />
         
         <DisableHistory 
-          history={history}  // ✅ Truyền history thay vì disableHistory
+          history={history}
           onExport={handleExportHistory}
         />
 
@@ -240,6 +298,7 @@ function App() {
             users={filteredUsers}
             loading={loading}
             onDisableClick={handleDisableClick}
+            onEditClick={handleEditClick}
             searchTerm={searchTerm}
           />
         ) : (
@@ -247,6 +306,7 @@ function App() {
             users={filteredUsers}
             loading={loading}
             onActivateClick={handleActivateClick}
+            onEditClick={handleEditClick}
             searchTerm={searchTerm}
           />
         )}
@@ -292,6 +352,15 @@ function App() {
         <ConfirmActivateModal
           user={selectedUser}
           onConfirm={handleConfirmActivate}
+          onCancel={handleCancelModal}
+          isProcessing={isProcessing}
+        />
+      )}
+
+      {showEditModal && selectedUser && (
+        <EditUserModal
+          user={selectedUser}
+          onConfirm={handleConfirmEdit}
           onCancel={handleCancelModal}
           isProcessing={isProcessing}
         />

@@ -1,7 +1,14 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from waitress import serve
-from authentik_client import disable_user_in_authentik, get_all_users_from_authentik, activate_user_in_authentik, get_inactive_users_from_authentik
+from authentik_client import (
+    disable_user_in_authentik, 
+    get_all_users_from_authentik, 
+    activate_user_in_authentik, 
+    get_inactive_users_from_authentik,
+    edit_user_in_authentik  # ✅ Thêm import này
+)
+
 app = Flask(__name__)
 
 # CORS config - cho phép cả localhost:3000 và localhost:5173
@@ -21,7 +28,7 @@ def handle_disable_request():
     if not username_to_disable:
         return jsonify({"success": False, "message": "Username is required"}), 400
 
-    print(f"Nhận yêu cầu vô hiệu hóa cho: {username_to_disable}")
+    print(f"📥 Nhận yêu cầu vô hiệu hóa cho: {username_to_disable}")
 
     success, message = disable_user_in_authentik(username_to_disable)
     if success:
@@ -31,23 +38,20 @@ def handle_disable_request():
 
 @app.route('/api/users', methods=['GET'])
 def list_users():
-    print("Nhận yêu cầu lấy danh sách users")  # Debug log
+    print("📥 Nhận yêu cầu lấy danh sách users")
     success, result = get_all_users_from_authentik()
     
     if success:
-        print(f"Trả về {len(result)} users")  # Debug log
+        print(f"✅ Trả về {len(result)} users")
         return jsonify(result), 200
     else:
-        print(f"Lỗi: {result}")  # Debug log
+        print(f"❌ Lỗi: {result}")
         return jsonify({"success": False, "message": result}), 500
 
-# Thêm route test
 @app.route('/api/health', methods=['GET'])
 def health_check():
     return jsonify({"status": "ok", "message": "Backend is running"}), 200
 
-
-# Route mới: Lấy danh sách users inactive
 @app.route('/api/users/inactive', methods=['GET'])
 def list_inactive_users():
     print("📥 Nhận yêu cầu lấy danh sách users inactive")
@@ -60,8 +64,29 @@ def list_inactive_users():
         print(f"❌ Lỗi: {result}")
         return jsonify({"success": False, "message": result}), 500
 
+@app.route('/api/edit_user', methods=['POST'])
+def handle_edit_request():
+    data = request.get_json()
+    username = data.get('username')
+    update_data = {
+        'name': data.get('name'),
+        'email': data.get('email')
+    }
+    
+    if not username:
+        return jsonify({"success": False, "message": "Username is required"}), 400
 
-# Route mới: Activate user
+    print(f"📥 Nhận yêu cầu chỉnh sửa cho: {username}")
+    print(f"📝 Dữ liệu: {update_data}")
+
+    success, result = edit_user_in_authentik(username, update_data)
+    if success:
+        print(f"✅ Chỉnh sửa thành công: {username}")
+        return jsonify({"success": True, "message": "User updated successfully", "user": result}), 200
+    else:
+        print(f"❌ Chỉnh sửa thất bại: {result}")
+        return jsonify({"success": False, "message": result}), 500
+    
 @app.route('/api/activate_user', methods=['POST'])
 def handle_activate_request():
     data = request.get_json()
@@ -81,5 +106,5 @@ def handle_activate_request():
         return jsonify({"success": False, "message": message}), 500
 
 if __name__ == '__main__':
-    print("Starting Waitress server on http://0.0.0.0:5000")
+    print("🚀 Starting Waitress server on http://0.0.0.0:5000")
     serve(app, host='0.0.0.0', port=5000)

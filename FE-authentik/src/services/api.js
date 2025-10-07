@@ -1,35 +1,33 @@
 const API_BASE_URL = 'http://localhost:5000/api';
 
 export const userAPI = {
-  // Lấy danh sách tất cả người dùng đang hoạt động
+  // Lấy tất cả users đang hoạt động
   getAllUsers: async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/users`);
       if (!response.ok) {
-        throw new Error('Không thể tải danh sách người dùng');
+        throw new Error('Không thể lấy danh sách người dùng');
       }
       return await response.json();
     } catch (error) {
-      console.error('Error fetching users:', error);
-      throw error;
+      throw new Error(error.message || 'Lỗi kết nối đến server');
     }
   },
 
-  // Lấy danh sách người dùng đã bị deactivate
+  // Lấy tất cả users đã bị vô hiệu hóa
   getInactiveUsers: async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/users/inactive`);
       if (!response.ok) {
-        throw new Error('Không thể tải danh sách người dùng inactive');
+        throw new Error('Không thể lấy danh sách người dùng đã vô hiệu hóa');
       }
       return await response.json();
     } catch (error) {
-      console.error('Error fetching inactive users:', error);
-      throw error;
+      throw new Error(error.message || 'Lỗi kết nối đến server');
     }
   },
 
-  // Vô hiệu hóa tài khoản người dùng
+  // Vô hiệu hóa user
   disableUser: async (username) => {
     try {
       const response = await fetch(`${API_BASE_URL}/disable_user`, {
@@ -39,21 +37,20 @@ export const userAPI = {
         },
         body: JSON.stringify({ username }),
       });
+
+      const data = await response.json();
       
-      const result = await response.json();
-      
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || 'Không thể vô hiệu hóa tài khoản');
+      if (!response.ok) {
+        throw new Error(data.message || 'Không thể vô hiệu hóa tài khoản');
       }
       
-      return result;
+      return data;
     } catch (error) {
-      console.error('Error disabling user:', error);
-      throw error;
+      throw new Error(error.message || 'Lỗi kết nối đến server');
     }
   },
 
-  // Kích hoạt lại tài khoản người dùng
+  // Kích hoạt lại user
   activateUser: async (username) => {
     try {
       const response = await fetch(`${API_BASE_URL}/activate_user`, {
@@ -63,17 +60,43 @@ export const userAPI = {
         },
         body: JSON.stringify({ username }),
       });
+
+      const data = await response.json();
       
-      const result = await response.json();
-      
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || 'Không thể kích hoạt tài khoản');
+      if (!response.ok) {
+        throw new Error(data.message || 'Không thể kích hoạt tài khoản');
       }
       
-      return result;
+      return data;
     } catch (error) {
-      console.error('Error activating user:', error);
-      throw error;
+      throw new Error(error.message || 'Lỗi kết nối đến server');
     }
-  }
+  },
+
+  // Chỉnh sửa thông tin user
+  editUser: async (username, updateData) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/edit_user`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          username,
+          name: updateData.name,
+          email: updateData.email
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Không thể cập nhật thông tin tài khoản');
+      }
+      
+      return data.user;
+    } catch (error) {
+      throw new Error(error.message || 'Lỗi kết nối đến server');
+    }
+  },
 };

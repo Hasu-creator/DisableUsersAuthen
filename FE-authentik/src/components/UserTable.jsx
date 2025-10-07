@@ -1,8 +1,7 @@
 import React from 'react';
-import { UserX, Loader2, Users, Mail, User, Shield } from 'lucide-react';
+import { UserX, Loader2, Users, Mail, User, Shield, Edit } from 'lucide-react';
 
-export default function UserTable({ users, loading, onDisableClick, searchTerm }) {
-  // Hàm lấy initials từ tên
+export default function UserTable({ users, loading, onDisableClick, onEditClick, searchTerm }) {
   const getInitials = (name) => {
     if (!name) return '?';
     const words = name.split(' ').filter(w => w.length > 0);
@@ -11,7 +10,6 @@ export default function UserTable({ users, loading, onDisableClick, searchTerm }
     return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
   };
 
-  // Hàm tạo màu gradient dựa trên tên
   const getGradientColor = (name) => {
     const colors = [
       'from-indigo-500 to-purple-600',
@@ -87,7 +85,6 @@ export default function UserTable({ users, loading, onDisableClick, searchTerm }
               >
                 <td className="px-8 py-6">
                   <div className="flex items-center gap-4">
-                    {/* Avatar với initials */}
                     <div 
                       className={`w-12 h-12 min-w-[48px] bg-gradient-to-br ${getGradientColor(user.name)} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200`}
                     >
@@ -127,10 +124,19 @@ export default function UserTable({ users, loading, onDisableClick, searchTerm }
                   </div>
                 </td>
                 <td className="px-8 py-6">
-                  <div className="flex justify-center">
+                  <div className="flex justify-center gap-2">
+                    <button
+                      onClick={() => onEditClick(user)}
+                      className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl transition-all duration-200 text-sm font-bold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 whitespace-nowrap"
+                      title="Chỉnh sửa thông tin"
+                    >
+                      <Edit size={18} className="flex-shrink-0" />
+                      <span>Sửa</span>
+                    </button>
                     <button
                       onClick={() => onDisableClick(user)}
-                      className="inline-flex items-center justify-center gap-2 px-6 py-3 min-w-[140px] bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl transition-all duration-200 text-sm font-bold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 whitespace-nowrap"
+                      className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl transition-all duration-200 text-sm font-bold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 whitespace-nowrap"
+                      title="Vô hiệu hóa tài khoản"
                     >
                       <UserX size={18} className="flex-shrink-0" />
                       <span>Vô hiệu hóa</span>

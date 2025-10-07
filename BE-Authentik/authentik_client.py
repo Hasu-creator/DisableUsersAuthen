@@ -100,14 +100,14 @@ def disable_user_in_authentik(username):
     update_data = {"is_active": False}
     try:
         response = requests.patch(update_url, headers=WORKING_HEADERS, json=update_data, verify=False)
-        response = requests.patch(update_url, headers=WORKING_HEADERS, json=update_data, verify=False)
         print(f"📊 Response Status: {response.status_code}")
-        print(f"📄 Response Body: {response.text[:200]}")  # In 200 ký tự đầu
+        print(f"📄 Response Body: {response.text[:200]}")
         
         if response.status_code == 403:
             print("❌ LỖI 403: Token không có quyền 'Change User'!")
             return False, "Permission denied. Token needs 'Change User' permission."
         response.raise_for_status()
+        
         verify_response = requests.get(search_url, headers=WORKING_HEADERS, verify=False)
         user_status = verify_response.json()['results'][0]['is_active']
         print(f"🔍 Verify: is_active = {user_status}")
@@ -168,7 +168,7 @@ def get_inactive_users_from_authentik():
                 "username": user["username"],
                 "name": f"{user.get('name', 'N/A')} ({user['username']})",
                 "email": user["email"],
-                "deactivated_at": user.get("last_login", "N/A")  # Có thể thêm timestamp
+                "deactivated_at": user.get("last_login", "N/A")
             }
             for user in data.get("results", [])
         ]
@@ -180,6 +180,73 @@ def get_inactive_users_from_authentik():
         print(f"❌ Lỗi khi lấy danh sách User inactive: {e}")
         return False, f"API List Error: {e}"
 
+def edit_user_in_authentik(username, update_data):
+    """Chỉnh sửa thông tin tài khoản người dùng"""
+    if not WORKING_HEADERS:
+        return False, "Authentication failed. Please check your API token."
+    
+    # Tìm user
+    search_url = f"{AUTHENTIK_URL}/api/v3/core/users/?username={username}"
+    try:
+        response = requests.get(search_url, headers=WORKING_HEADERS, verify=False) 
+        response.raise_for_status() 
+        data = response.json()
+        
+        if not data['results']:
+            print(f"❌ Không tìm thấy người dùng với username '{username}'")
+            return False, "User not found"
+        
+        user = data['results'][0]
+        user_pk = user['pk']
+        print(f"✅ Tìm thấy User ID: {user_pk}")
+        print(f"📝 Current user data: name='{user.get('name')}', email='{user.get('email')}'")
+
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Lỗi khi tìm kiếm User: {e}")
+        return False, f"API Search Error: {e}"
+
+    # Cập nhật thông tin user
+    update_url = f"{AUTHENTIK_URL}/api/v3/core/users/{user_pk}/"
+    
+    # Chuẩn bị data cần update - CHỈ gửi các trường có giá trị
+    payload = {}
+    if 'name' in update_data and update_data['name']:
+        payload['name'] = update_data['name'].strip()
+    if 'email' in update_data and update_data['email']:
+        payload['email'] = update_data['email'].strip()
+    
+    if not payload:
+        print("⚠️ Không có dữ liệu để cập nhật")
+        return False, "No data to update"
+    
+    print(f"📤 Sending update payload: {payload}")
+    
+    try:
+        response = requests.patch(update_url, headers=WORKING_HEADERS, json=payload, verify=False)
+        
+        print(f"📊 Response Status: {response.status_code}")
+        print(f"📄 Response Body: {response.text[:500]}")
+        
+        if response.status_code == 200:
+            updated_user = response.json()
+            print(f"✅ Cập nhật thành công tài khoản '{username}'")
+            
+            # Trả về data đúng format mà frontend expect
+            return True, {
+                "username": updated_user['username'],
+                "name": updated_user.get('name', 'N/A'),
+                "email": updated_user['email']
+            }
+        elif response.status_code == 403:
+            print(f"❌ Lỗi Quyền truy cập (Status 403)")
+            return False, "Permission denied. Token needs 'Change User' permission."
+        else:
+            print(f"❌ Lỗi API: Status {response.status_code}, Body: {response.text}")
+            return False, f"API Error: {response.status_code} - {response.text}"
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Lỗi khi cập nhật User: {e}")
+        return False, f"API Update Error: {e}"
 
 def activate_user_in_authentik(username):
     """Kích hoạt lại tài khoản đã bị deactivate"""
