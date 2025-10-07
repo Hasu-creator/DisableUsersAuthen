@@ -6,7 +6,6 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 AUTHENTIK_URL = "https://ssotest.sctvdev.top"
 API_TOKEN = "3Vw3z2QiPL4q3KfhQ3A902qtS82JVH2gqFoZ2mS9EMCp7PXZ7RPSjjElo4BL"
 
-# Thử cả 2 format
 API_HEADERS_BEARER = {
     "Authorization": f"Bearer {API_TOKEN}",
     "Content-Type": "application/json"
