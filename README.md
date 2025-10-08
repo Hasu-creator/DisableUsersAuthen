@@ -297,7 +297,7 @@ hr-account-disabler/
 
 ### Dashboard - Tài khoản hoạt động
 <p align="center">
-  <img src="./screenshots/active-users.png" alt="Active Users Dashboard" width="800"/>
+  <img src="[./screenshots/active-users.png](https://sf-static.upanhlaylink.com/view/image_20251008f4753f9446176f670af25160ea267618.jpg)" alt="Active Users Dashboard" width="800"/>
 </p>
 
 ### Dashboard - Tài khoản bị vô hiệu hóa
@@ -345,27 +345,6 @@ lsof -ti:5173 | xargs kill
 rm -rf node_modules package-lock.json
 npm install
 ```
-
----
-
-## 🤝 Đóng Góp
-
-Chúng tôi rất hoan nghênh mọi đóng góp! Để đóng góp:
-
-1. **Fork** repository này
-2. **Tạo branch** cho tính năng mới (`git checkout -b feature/AmazingFeature`)
-3. **Commit** thay đổi (`git commit -m 'Add some AmazingFeature'`)
-4. **Push** lên branch (`git push origin feature/AmazingFeature`)
-5. **Mở Pull Request**
-
-### Quy Tắc Đóng Góp
-
-- ✅ Code phải tuân theo ESLint rules
-- ✅ Sử dụng Prettier để format code
-- ✅ Viết commit message rõ ràng
-- ✅ Thêm documentation cho tính năng mới
-- ✅ Test kỹ trước khi tạo PR
-
 ---
 
 ## 📝 Changelog
@@ -382,7 +361,7 @@ Chúng tôi rất hoan nghênh mọi đóng góp! Để đóng góp:
 
 ## 👥 Authors
 
-- **Your Name** - *Initial work* - [YourGitHub](https://github.com/yourusername)
+- **Hasu** - *Initial work* - [YourGitHub](https://github.com/Hasu-creator)
 
 ---
 
