@@ -10,7 +10,6 @@ export default function EditUserModal({ user, onConfirm, onCancel, isProcessing 
 
   useEffect(() => {
     if (user) {
-      // Loại bỏ username trong ngoặc nếu có
       const displayName = user.name.includes('(') 
         ? user.name.substring(0, user.name.indexOf('(')).trim() 
         : user.name;
@@ -97,7 +96,7 @@ export default function EditUserModal({ user, onConfirm, onCancel, isProcessing 
         </div>
 
         <div className="p-8 space-y-6">
-          {/* Username - Có thể chỉnh sửa với checkbox */}
+          {/* Username */}
           <div>
             <label className="block text-sm font-bold text-gray-800 mb-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -147,7 +146,7 @@ export default function EditUserModal({ user, onConfirm, onCancel, isProcessing 
                     {errors.newUsername}
                   </p>
                 )}
-                {/* ✅ THAY ĐỔI: Thông báo tích cực thay vì cảnh báo */}
+                {}
                 <div className="mt-2 bg-green-50 border border-green-200 rounded-lg p-3">
                   <p className="text-xs text-green-800 flex items-start gap-2">
                     <CheckCircle size={14} className="flex-shrink-0 mt-0.5" />
@@ -216,7 +215,7 @@ export default function EditUserModal({ user, onConfirm, onCancel, isProcessing 
             )}
           </div>
 
-          {/* Info - CẬP NHẬT nội dung */}
+          {/* Info*/}
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-6">
             <div className="flex items-start gap-4">
               <div className="bg-blue-100 p-2 rounded-lg flex-shrink-0">

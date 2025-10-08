@@ -1,11 +1,7 @@
-// src/hooks/useUsers.js
 import { useState, useEffect } from 'react';
 import { userAPI } from '../services';
 
-/**
- * Custom hook để quản lý danh sách users (active & inactive)
- * Fetch cả 2 loại user ngay từ đầu để hiển thị số đếm chính xác
- */
+
 export const useUsers = () => {
   const [users, setUsers] = useState([]);
   const [inactiveUsers, setInactiveUsers] = useState([]);
@@ -17,8 +13,6 @@ export const useUsers = () => {
     setError(null);
     
     try {
-      // Fetch cả 2 loại user cùng lúc với Promise.all
-      // Giúp hiển thị số đếm chính xác ngay từ đầu
       const [activeData, inactiveData] = await Promise.all([
         userAPI.getAllUsers(),
         userAPI.getInactiveUsers()

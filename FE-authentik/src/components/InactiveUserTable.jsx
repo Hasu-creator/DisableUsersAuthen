@@ -136,7 +136,7 @@ export default function InactiveUserTable({ users, loading, onActivateClick, sea
                         </div>
                         <div className="flex items-center gap-2 mt-1">
                           <span className="text-xs text-gray-500">ID: #{index + 1}</span>
-                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium">Đã vô hiệu hóa</span>
+                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium">Deactive</span>
                         </div>
                       </div>
                     </div>
