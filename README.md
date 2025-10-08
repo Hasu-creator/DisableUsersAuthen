@@ -297,7 +297,7 @@ hr-account-disabler/
 
 ### Dashboard - Tài khoản hoạt động
 <p align="center">
-  <img src="[https://sf-static.upanhlaylink.com/view/image_20251008f4753f9446176f670af25160ea267618.jpg]" alt="Active Users Dashboard" width="800"/>
+  <img src="https://sf-static.upanhlaylink.com/view/image_20251008f4753f9446176f670af25160ea267618.jpg" alt="Active Users Dashboard" width="800"/>
 </p>
 
 ### Dashboard - Tài khoản bị vô hiệu hóa
