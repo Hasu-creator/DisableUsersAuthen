@@ -15,7 +15,6 @@ export default function ConfirmDisableModal({ user, onConfirm, onCancel, isProce
     { value: 'Khác', icon: '📝' }
   ];
 
-  // Tính toán ngày tối đa (2 tháng sau)
   const getMaxDate = () => {
     const maxDate = new Date();
     maxDate.setMonth(maxDate.getMonth() + 2);

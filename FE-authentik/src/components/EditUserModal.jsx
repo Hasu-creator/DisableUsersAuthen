@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Edit, Loader2, X, User, Mail, Shield, AlertCircle } from 'lucide-react';
+import { Edit, Loader2, X, User, Mail, Shield, AlertCircle, CheckCircle } from 'lucide-react';
 
 export default function EditUserModal({ user, onConfirm, onCancel, isProcessing }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [newUsername, setNewUsername] = useState('');
+  const [enableUsernameEdit, setEnableUsernameEdit] = useState(false);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -14,12 +16,22 @@ export default function EditUserModal({ user, onConfirm, onCancel, isProcessing 
         : user.name;
       setName(displayName);
       setEmail(user.email);
+      setNewUsername(user.username);
     }
   }, [user]);
 
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
+  };
+
+  const validateUsername = (username) => {
+    if (username.length < 3 || username.length > 32) {
+      return false;
+    }
+    
+    const re = /^[\p{L}\p{N}\s._-]+$/u;
+    return re.test(username);
   };
 
   const handleSubmit = () => {
@@ -35,6 +47,16 @@ export default function EditUserModal({ user, onConfirm, onCancel, isProcessing 
       newErrors.email = 'Email không hợp lệ';
     }
     
+    if (enableUsernameEdit) {
+      if (!newUsername.trim()) {
+        newErrors.newUsername = 'Vui lòng nhập username mới';
+      } else if (!validateUsername(newUsername)) {
+        newErrors.newUsername = 'Username chỉ được chứa chữ, số, dấu chấm, gạch dưới, gạch ngang (3-32 ký tự)';
+      } else if (newUsername === user.username) {
+        newErrors.newUsername = 'Username mới phải khác username hiện tại';
+      }
+    }
+    
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -43,7 +65,8 @@ export default function EditUserModal({ user, onConfirm, onCancel, isProcessing 
     onConfirm({
       username: user.username,
       name: name.trim(),
-      email: email.trim()
+      email: email.trim(),
+      new_username: enableUsernameEdit && newUsername !== user.username ? newUsername.trim() : undefined
     });
   };
 
@@ -74,16 +97,65 @@ export default function EditUserModal({ user, onConfirm, onCancel, isProcessing 
         </div>
 
         <div className="p-8 space-y-6">
-          {/* Username - Không cho chỉnh sửa */}
+          {/* Username - Có thể chỉnh sửa với checkbox */}
           <div>
-            <label className="block text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-              <Shield size={20} className="text-blue-600" />
-              Username
-              <span className="ml-2 text-xs text-gray-500 font-normal">(Không thể thay đổi)</span>
+            <label className="block text-sm font-bold text-gray-800 mb-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Shield size={20} className="text-blue-600" />
+                Username
+              </div>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={enableUsernameEdit}
+                  onChange={(e) => {
+                    setEnableUsernameEdit(e.target.checked);
+                    if (!e.target.checked) {
+                      setNewUsername(user?.username);
+                      setErrors({...errors, newUsername: null});
+                    }
+                  }}
+                  className="w-4 h-4 text-blue-600 rounded"
+                />
+                <span className="text-xs text-gray-600 font-normal">Cho phép chỉnh sửa</span>
+              </label>
             </label>
-            <div className="w-full px-6 py-4 bg-gray-100 border-2 border-gray-200 rounded-xl text-gray-500 font-mono font-semibold">
-              {user?.username}
-            </div>
+            
+            {!enableUsernameEdit ? (
+              <div className="w-full px-6 py-4 bg-gray-100 border-2 border-gray-200 rounded-xl text-gray-500 font-mono font-semibold">
+                {user?.username}
+              </div>
+            ) : (
+              <>
+                <input
+                  type="text"
+                  value={newUsername}
+                  onChange={(e) => {
+                    setNewUsername(e.target.value);
+                    if (errors.newUsername) setErrors({...errors, newUsername: null});
+                  }}
+                  placeholder="Nhập username mới"
+                  className={`w-full px-6 py-4 bg-gray-50 border-2 rounded-xl focus:bg-white focus:ring-4 outline-none transition-all duration-200 text-gray-900 font-mono ${
+                    errors.newUsername 
+                      ? 'border-red-300 focus:border-red-500 focus:ring-red-100' 
+                      : 'border-blue-300 focus:border-blue-500 focus:ring-blue-100'
+                  }`}
+                />
+                {errors.newUsername && (
+                  <p className="mt-2 text-sm text-red-600 flex items-center gap-1">
+                    <AlertCircle size={14} />
+                    {errors.newUsername}
+                  </p>
+                )}
+                {/* ✅ THAY ĐỔI: Thông báo tích cực thay vì cảnh báo */}
+                <div className="mt-2 bg-green-50 border border-green-200 rounded-lg p-3">
+                  <p className="text-xs text-green-800 flex items-start gap-2">
+                    <CheckCircle size={14} className="flex-shrink-0 mt-0.5" />
+                    <span><strong>✅ Sessions được giữ nguyên:</strong> User không cần đăng nhập lại sau khi đổi username!</span>
+                  </p>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Họ tên */}
@@ -144,7 +216,7 @@ export default function EditUserModal({ user, onConfirm, onCancel, isProcessing 
             )}
           </div>
 
-          {/* Info */}
+          {/* Info - CẬP NHẬT nội dung */}
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-6">
             <div className="flex items-start gap-4">
               <div className="bg-blue-100 p-2 rounded-lg flex-shrink-0">
@@ -159,12 +231,14 @@ export default function EditUserModal({ user, onConfirm, onCancel, isProcessing 
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-blue-500 font-bold flex-shrink-0">•</span>
-                    <span><strong>Username không thể thay đổi</strong> sau khi tạo tài khoản</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-blue-500 font-bold flex-shrink-0">•</span>
                     <span>Email phải là <strong>địa chỉ hợp lệ</strong> và duy nhất</span>
                   </li>
+                  {enableUsernameEdit && (
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-500 font-bold flex-shrink-0">✅</span>
+                      <span className="text-green-800"><strong>Sessions được giữ nguyên!</strong> User không bị logout khi đổi username</span>
+                    </li>
+                  )}
                 </ul>
               </div>
             </div>

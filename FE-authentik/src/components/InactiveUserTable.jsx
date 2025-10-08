@@ -1,8 +1,7 @@
 import React from 'react';
-import { UserCheck, Loader2, Users, Mail, User, Shield, Ban } from 'lucide-react';
+import { UserCheck, Loader2, Users, Mail, User, Shield, Ban, AlertCircle } from 'lucide-react';
 
 export default function InactiveUserTable({ users, loading, onActivateClick, searchTerm }) {
-  // Hàm lấy initials từ tên
   const getInitials = (name) => {
     if (!name) return '?';
     const words = name.split(' ').filter(w => w.length > 0);
@@ -11,14 +10,27 @@ export default function InactiveUserTable({ users, loading, onActivateClick, sea
     return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
   };
 
-  const getGradientColor = (name) => {
-    const colors = [
-      'from-gray-400 to-gray-500',
-      'from-slate-400 to-slate-500',
-      'from-zinc-400 to-zinc-500',
+  const getAvatarStyle = (name) => {
+    const styles = [
+      {
+        gradient: 'from-gray-400 via-gray-500 to-slate-500',
+        ring: 'ring-gray-200',
+        shadow: 'shadow-gray-500/30'
+      },
+      {
+        gradient: 'from-slate-400 via-slate-500 to-zinc-500',
+        ring: 'ring-slate-200',
+        shadow: 'shadow-slate-500/30'
+      },
+      {
+        gradient: 'from-zinc-400 via-zinc-500 to-gray-500',
+        ring: 'ring-zinc-200',
+        shadow: 'shadow-zinc-500/30'
+      }
     ];
-    const index = name.length % colors.length;
-    return colors[index];
+    
+    const index = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % styles.length;
+    return styles[index];
   };
 
   if (loading) {
@@ -74,74 +86,99 @@ export default function InactiveUserTable({ users, loading, onActivateClick, sea
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {users.map((user, index) => (
-              <tr 
-                key={user.username} 
-                className="hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 transition-all duration-200 group opacity-75"
-              >
-                <td className="px-8 py-6">
-                  <div className="flex items-center gap-4">
-                    {/* Avatar với initials - màu xám để thể hiện inactive */}
-                    <div 
-                      className={`w-12 h-12 min-w-[48px] bg-gradient-to-br ${getGradientColor(user.name)} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-200 relative`}
-                    >
-                      <span className="text-white font-bold text-lg">
-                        {getInitials(user.name)}
-                      </span>
-                      {/* Badge inactive */}
-                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center">
-                        <Ban className="text-white" size={12} />
-                      </div>
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <div className="text-base font-bold text-gray-700 truncate" title={user.name}>
-                          {user.name}
+            {users.map((user, index) => {
+              const avatarStyle = getAvatarStyle(user.name);
+              
+              return (
+                <tr 
+                  key={user.username} 
+                  className="hover:bg-gradient-to-r hover:from-green-50 hover:to-emerald-50 transition-all duration-200 group"
+                >
+                  <td className="px-8 py-6">
+                    <div className="flex items-center gap-4">
+                      {/* Grayscale Avatar */}
+                      <div className="relative group/avatar">
+                        {/* Outer glow ring - muted */}
+                        <div className={`absolute -inset-1 bg-gradient-to-r ${avatarStyle.gradient} rounded-2xl blur opacity-20 group-hover/avatar:opacity-40 transition duration-300`}></div>
+                        
+                        {/* Main avatar*/}
+                        <div className={`relative w-14 h-14 bg-gradient-to-br ${avatarStyle.gradient} rounded-2xl flex items-center justify-center shadow-xl ${avatarStyle.shadow} ring-4 ${avatarStyle.ring} ring-opacity-50 group-hover:scale-110 transition-all duration-300 grayscale`}>
+                          {/* Shine effect */}
+                          <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 rounded-2xl opacity-0 group-hover/avatar:opacity-100 transition-opacity duration-300"></div>
+                          
+                          {/* Inactive overlay */}
+                          <div className="absolute inset-0 bg-black/10 rounded-2xl"></div>
+                          
+                          {/* Initials */}
+                          <span className="relative text-white font-bold text-xl drop-shadow-lg opacity-70">
+                            {getInitials(user.name)}
+                          </span>
+                          
+                          {/* Animated border on hover */}
+                          <div className="absolute inset-0 rounded-2xl border-2 border-white/20 opacity-0 group-hover/avatar:opacity-100 transition-opacity duration-300"></div>
                         </div>
-                        <span className="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded-full font-bold">
-                          Inactive
-                        </span>
+                        
+                        {/* Status indicator - red inactive badge */}
+                        <div className="absolute -top-1 -right-1 bg-gradient-to-br from-red-500 to-red-600 rounded-full p-1.5 border-2 border-white shadow-lg animate-pulse">
+                          <Ban className="text-white" size={12} />
+                        </div>
                       </div>
-                      <div className="text-xs text-gray-500 mt-0.5">ID: #{index + 1}</div>
+                      
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <div className="text-base font-bold text-gray-700 truncate group-hover:text-green-600 transition-colors" title={user.name}>
+                            {user.name}
+                          </div>
+                          <span className="bg-red-100 text-red-700 text-xs px-2.5 py-1 rounded-full font-bold flex items-center gap-1">
+                            <AlertCircle size={12} />
+                            Inactive
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-xs text-gray-500">ID: #{index + 1}</span>
+                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium">Đã vô hiệu hóa</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </td>
-                <td className="px-8 py-6">
-                  <div className="flex items-center gap-2">
-                    <Shield className="text-gray-400 flex-shrink-0" size={16} />
-                    <span 
-                      className="text-sm font-mono bg-gray-100 text-gray-600 px-3 py-2 rounded-lg font-semibold border border-gray-200 truncate max-w-xs"
-                      title={user.username}
-                    >
-                      {user.username}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-8 py-6">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <Mail className="text-gray-400 flex-shrink-0" size={16} />
-                    <a 
-                      href={`mailto:${user.email}`}
-                      className="text-sm text-gray-600 hover:text-green-600 transition-colors hover:underline truncate"
-                      title={user.email}
-                    >
-                      {user.email}
-                    </a>
-                  </div>
-                </td>
-                <td className="px-8 py-6">
-                  <div className="flex justify-center">
-                    <button
-                      onClick={() => onActivateClick(user)}
-                      className="inline-flex items-center justify-center gap-2 px-6 py-3 min-w-[140px] bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl transition-all duration-200 text-sm font-bold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 whitespace-nowrap"
-                    >
-                      <UserCheck size={18} className="flex-shrink-0" />
-                      <span>Kích hoạt lại</span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td className="px-8 py-6">
+                    <div className="flex items-center gap-2">
+                      <Shield className="text-gray-400 flex-shrink-0" size={16} />
+                      <span 
+                        className="text-sm font-mono bg-gray-100 text-gray-600 px-3 py-2 rounded-lg font-semibold border border-gray-200 truncate max-w-xs hover:border-gray-300 transition-colors"
+                        title={user.username}
+                      >
+                        {user.username}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-8 py-6">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Mail className="text-gray-400 flex-shrink-0" size={16} />
+                      <a 
+                        href={`mailto:${user.email}`}
+                        className="text-sm text-gray-600 hover:text-green-600 transition-colors hover:underline truncate"
+                        title={user.email}
+                      >
+                        {user.email}
+                      </a>
+                    </div>
+                  </td>
+                  <td className="px-8 py-6">
+                    <div className="flex justify-center">
+                      <button
+                        onClick={() => onActivateClick(user)}
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl transition-all duration-200 text-sm font-bold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 whitespace-nowrap"
+                        title="Kích hoạt lại tài khoản"
+                      >
+                        <UserCheck size={18} className="flex-shrink-0" />
+                        <span>Kích hoạt lại</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

@@ -41,7 +41,7 @@ export const userAPI = {
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.message || 'Không thể vô hiệu hóa tài khoản');
+        throw new Error(data.message || data.detail || 'Không thể vô hiệu hóa tài khoản');
       }
       
       return data;
@@ -64,7 +64,7 @@ export const userAPI = {
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.message || 'Không thể kích hoạt tài khoản');
+        throw new Error(data.message || data.detail || 'Không thể kích hoạt tài khoản');
       }
       
       return data;
@@ -73,25 +73,42 @@ export const userAPI = {
     }
   },
 
-  // Chỉnh sửa thông tin user
+  // ✅ Chỉnh sửa thông tin user (bao gồm cả username) - THÊM keep_sessions
   editUser: async (username, updateData) => {
     try {
+      const payload = {
+        username,
+        name: updateData.name,
+        email: updateData.email
+      };
+      
+      // Chỉ thêm new_username nếu có
+      if (updateData.new_username) {
+        payload.new_username = updateData.new_username;
+        // 🔥 THÊM FLAG keep_sessions = true để KHÔNG revoke sessions
+        payload.keep_sessions = true;
+      }
+      
       const response = await fetch(`${API_BASE_URL}/edit_user`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          username,
-          name: updateData.name,
-          email: updateData.email
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.message || 'Không thể cập nhật thông tin tài khoản');
+        // Handle specific error codes
+        if (response.status === 409) {
+          throw new Error(data.detail || 'Username đã tồn tại trong hệ thống');
+        } else if (response.status === 403) {
+          throw new Error(data.detail || 'Bạn không có quyền chỉnh sửa tài khoản này');
+        } else if (response.status === 404) {
+          throw new Error(data.detail || 'Không tìm thấy tài khoản');
+        }
+        throw new Error(data.message || data.detail || 'Không thể cập nhật thông tin tài khoản');
       }
       
       return data.user;
