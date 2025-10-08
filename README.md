@@ -388,28 +388,7 @@ Chúng tôi rất hoan nghênh mọi đóng góp! Để đóng góp:
 
 ## 📞 Liên Hệ
 
-- **Email**: your.email@company.com
-- **Slack**: #hr-tools
-- **Issue Tracker**: [GitHub Issues](https://github.com/your-repo/issues)
+- **Email**: tech.chauloc18@gmail.com
+- **Issue Tracker**: [GitHub Issues](https://github.com/Hasu-creator/issues)
 
 ---
-
-## 📄 License
-
-Dự án này được phân phối dưới giấy phép **MIT License** - xem file [LICENSE](LICENSE) để biết thêm chi tiết.
-
----
-
-## 🙏 Lời Cảm Ơn
-
-- Cảm ơn team Phòng Nhân sự đã đóng góp ý kiến
-- Cảm ơn các thư viện open-source được sử dụng trong dự án
-- Cảm ơn cộng đồng React và Tailwind CSS
-
----
-
-<div align="center">
-  <p>Made with ❤️ by HR Tech Team</p>
-  <p>© 2025 HR Account Disabler Tool. All rights reserved.</p>
-</div>
-```
