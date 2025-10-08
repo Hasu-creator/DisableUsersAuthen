@@ -293,24 +293,6 @@ hr-account-disabler/
 
 ---
 
-## 🎨 Screenshots
-
-### Dashboard - Tài khoản hoạt động
-<p align="center">
-  <img src="./screenshots/active-users.png" alt="Active Users Dashboard" width="800"/>
-</p>
-
-### Dashboard - Tài khoản bị vô hiệu hóa
-<p align="center">
-  <img src="./screenshots/inactive-users.png" alt="Inactive Users Dashboard" width="800"/>
-</p>
-
-### Modal Vô hiệu hóa
-<p align="center">
-  <img src="./screenshots/disable-modal.png" alt="Disable Modal" width="600"/>
-</p>
-
----
 
 ## 🐛 Xử Lý Lỗi Thường Gặp
 
@@ -345,27 +327,6 @@ lsof -ti:5173 | xargs kill
 rm -rf node_modules package-lock.json
 npm install
 ```
-
----
-
-## 🤝 Đóng Góp
-
-Chúng tôi rất hoan nghênh mọi đóng góp! Để đóng góp:
-
-1. **Fork** repository này
-2. **Tạo branch** cho tính năng mới (`git checkout -b feature/AmazingFeature`)
-3. **Commit** thay đổi (`git commit -m 'Add some AmazingFeature'`)
-4. **Push** lên branch (`git push origin feature/AmazingFeature`)
-5. **Mở Pull Request**
-
-### Quy Tắc Đóng Góp
-
-- ✅ Code phải tuân theo ESLint rules
-- ✅ Sử dụng Prettier để format code
-- ✅ Viết commit message rõ ràng
-- ✅ Thêm documentation cho tính năng mới
-- ✅ Test kỹ trước khi tạo PR
-
 ---
 
 ## 📝 Changelog
@@ -382,34 +343,13 @@ Chúng tôi rất hoan nghênh mọi đóng góp! Để đóng góp:
 
 ## 👥 Authors
 
-- **Your Name** - *Initial work* - [YourGitHub](https://github.com/yourusername)
+- **Hasu** - *Initial work* - [YourGitHub](https://github.com/Hasu-creator)
 
 ---
 
 ## 📞 Liên Hệ
 
-- **Email**: your.email@company.com
-- **Slack**: #hr-tools
-- **Issue Tracker**: [GitHub Issues](https://github.com/your-repo/issues)
+- **Email**: tech.chauloc18@gmail.com
+- **Issue Tracker**: [GitHub Issues](https://github.com/Hasu-creator/issues)
 
 ---
-
-## 📄 License
-
-Dự án này được phân phối dưới giấy phép **MIT License** - xem file [LICENSE](LICENSE) để biết thêm chi tiết.
-
----
-
-## 🙏 Lời Cảm Ơn
-
-- Cảm ơn team Phòng Nhân sự đã đóng góp ý kiến
-- Cảm ơn các thư viện open-source được sử dụng trong dự án
-- Cảm ơn cộng đồng React và Tailwind CSS
-
----
-
-<div align="center">
-  <p>Made with ❤️ by HR Tech Team</p>
-  <p>© 2025 HR Account Disabler Tool. All rights reserved.</p>
-</div>
-```
