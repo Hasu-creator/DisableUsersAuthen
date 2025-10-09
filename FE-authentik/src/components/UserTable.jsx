@@ -1,7 +1,8 @@
 import React from 'react';
-import { UserX, Loader2, Users, Mail, User, Shield, Edit, Sparkles } from 'lucide-react';
+import { UserX, Loader2, Users, Mail, Shield, Edit } from 'lucide-react';
 
 export default function UserTable({ users, loading, onDisableClick, onEditClick, searchTerm }) {
+  // Function to get initials from a name (from your second code)
   const getInitials = (name) => {
     if (!name) return '?';
     const words = name.split(' ').filter(w => w.length > 0);
@@ -10,71 +11,26 @@ export default function UserTable({ users, loading, onDisableClick, onEditClick,
     return (words[0].charAt(0) + words[words.length - 1].charAt(0)).toUpperCase();
   };
 
+  // Function for dynamic avatar colors (from your first code)
   const getAvatarStyle = (name) => {
     const styles = [
-      {
-        gradient: 'from-indigo-500 via-purple-500 to-pink-500',
-        ring: 'ring-indigo-200',
-        shadow: 'shadow-indigo-500/50',
-        glow: 'bg-indigo-400'
-      },
-      {
-        gradient: 'from-blue-500 via-cyan-500 to-teal-500',
-        ring: 'ring-blue-200',
-        shadow: 'shadow-blue-500/50',
-        glow: 'bg-blue-400'
-      },
-      {
-        gradient: 'from-purple-500 via-fuchsia-500 to-pink-500',
-        ring: 'ring-purple-200',
-        shadow: 'shadow-purple-500/50',
-        glow: 'bg-purple-400'
-      },
-      {
-        gradient: 'from-emerald-500 via-teal-500 to-cyan-500',
-        ring: 'ring-emerald-200',
-        shadow: 'shadow-emerald-500/50',
-        glow: 'bg-emerald-400'
-      },
-      {
-        gradient: 'from-orange-500 via-amber-500 to-yellow-500',
-        ring: 'ring-orange-200',
-        shadow: 'shadow-orange-500/50',
-        glow: 'bg-orange-400'
-      },
-      {
-        gradient: 'from-rose-500 via-pink-500 to-fuchsia-500',
-        ring: 'ring-rose-200',
-        shadow: 'shadow-rose-500/50',
-        glow: 'bg-rose-400'
-      },
-      {
-        gradient: 'from-violet-500 via-purple-500 to-indigo-500',
-        ring: 'ring-violet-200',
-        shadow: 'shadow-violet-500/50',
-        glow: 'bg-violet-400'
-      },
-      {
-        gradient: 'from-sky-500 via-blue-500 to-indigo-500',
-        ring: 'ring-sky-200',
-        shadow: 'shadow-sky-500/50',
-        glow: 'bg-sky-400'
-      }
+      { gradient: 'from-blue-500 to-blue-600', shadow: 'rgba(59, 130, 246, 0.3)' },      // Blue
+      { gradient: 'from-emerald-500 to-emerald-600', shadow: 'rgba(16, 185, 129, 0.3)' },// Emerald
+      { gradient: 'from-purple-500 to-purple-600', shadow: 'rgba(168, 85, 247, 0.3)' },  // Purple
+      { gradient: 'from-amber-500 to-amber-600', shadow: 'rgba(245, 158, 11, 0.3)' }    // Amber
     ];
     
+    // Create a consistent index based on the user's name
     const index = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % styles.length;
     return styles[index];
   };
 
   if (loading) {
     return (
-      <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-        <div className="flex flex-col items-center justify-center py-32">
-          <div className="relative">
-            <Loader2 className="animate-spin text-indigo-600" size={64} />
-            <div className="absolute inset-0 bg-indigo-100 rounded-full blur-xl opacity-50"></div>
-          </div>
-          <span className="mt-6 text-gray-600 text-lg font-medium">Đang tải danh sách nhân viên...</span>
+      <div className="bg-white rounded-xl shadow-lg border-2 border-slate-200 p-16">
+        <div className="flex flex-col items-center justify-center">
+          <Loader2 className="animate-spin text-blue-600 mb-4" size={48} strokeWidth={2.5} />
+          <span className="text-slate-700 font-semibold text-lg">Đang tải danh sách nhân viên...</span>
         </div>
       </div>
     );
@@ -82,15 +38,15 @@ export default function UserTable({ users, loading, onDisableClick, onEditClick,
 
   if (users.length === 0) {
     return (
-      <div className="bg-white rounded-2xl  overflow-hidden border border-gray-100">
-        <div className="text-center py-32">
-          <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full mb-6">
-            <Users className="text-gray-400" size={48} />
+      <div className="bg-white rounded-xl shadow-lg border-2 border-slate-200 p-16">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-slate-100 to-slate-200 rounded-2xl mb-5 shadow-md">
+            <Users className="text-slate-500" size={44} strokeWidth={2.5} />
           </div>
-          <p className="text-gray-500 text-xl font-medium mb-2">
+          <p className="text-slate-800 text-xl font-bold mb-2">
             {searchTerm ? 'Không tìm thấy nhân viên phù hợp' : 'Danh sách trống'}
           </p>
-          <p className="text-gray-400 text-sm">
+          <p className="text-slate-600 text-sm">
             {searchTerm ? 'Thử tìm kiếm với từ khóa khác' : 'Hiện tại không có nhân viên nào trong hệ thống'}
           </p>
         </div>
@@ -99,115 +55,106 @@ export default function UserTable({ users, loading, onDisableClick, onEditClick,
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden border-2 border-slate-200">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
-              <th className="px-8 py-5 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+            <tr className="bg-gradient-to-r from-slate-100 to-slate-50 border-b-2 border-slate-200">
+              <th className="px-8 py-5 text-left text-xs font-bold text-slate-800 uppercase tracking-wider">
                 Nhân viên
               </th>
-              <th className="px-8 py-5 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+              <th className="px-8 py-5 text-left text-xs font-bold text-slate-800 uppercase tracking-wider">
                 Tài khoản
               </th>
-              <th className="px-8 py-5 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+              <th className="px-8 py-5 text-left text-xs font-bold text-slate-800 uppercase tracking-wider">
                 Liên hệ
               </th>
-              <th className="px-8 py-5 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">
+              <th className="px-8 py-5 text-center text-xs font-bold text-slate-800 uppercase tracking-wider">
                 Thao tác
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-slate-100">
             {users.map((user, index) => {
+              // Get the dynamic style for the current user
               const avatarStyle = getAvatarStyle(user.name);
               
               return (
                 <tr 
                   key={user.username} 
-                  className="hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all duration-200 group"
+                  className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-slate-50 transition-colors duration-200"
                 >
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-4">
-                      {/* Beautiful Avatar with Multiple Effects */}
-                      <div className="relative group/avatar">
-                        {/* Outer glow ring */}
-                        <div className={`absolute -inset-1 bg-gradient-to-r ${avatarStyle.gradient} rounded-2xl blur opacity-30 group-hover/avatar:opacity-60 transition duration-300`}></div>
-                        
-                        {/* Main avatar */}
-                        <div className={`relative w-14 h-14 bg-gradient-to-br ${avatarStyle.gradient} rounded-2xl flex items-center justify-center shadow-xl ${avatarStyle.shadow} ring-4 ${avatarStyle.ring} ring-opacity-50 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300`}>
-                          {/* Shine effect */}
-                          <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/30 to-white/0 rounded-2xl opacity-0 group-hover/avatar:opacity-100 transition-opacity duration-300"></div>
-                          
-                          {/* Sparkle icon - appears on hover */}
-                          <Sparkles 
-                            className="absolute -top-1 -right-1 text-yellow-300 opacity-0 group-hover/avatar:opacity-100 transition-all duration-300 drop-shadow-lg animate-pulse" 
-                            size={16} 
-                          />
-                          
-                          {/* Initials */}
-                          <span className="relative text-white font-bold text-xl drop-shadow-lg">
+                      {/* Colorful Avatar with dynamic styles */}
+                      <div className="relative">
+                        <div 
+                          className={`w-12 h-12 bg-gradient-to-br ${avatarStyle.gradient} rounded-xl flex items-center justify-center shadow-md`}
+                          style={{ boxShadow: `0 4px 12px ${avatarStyle.shadow}` }}
+                        >
+                          <span className="text-white font-bold text-base">
                             {getInitials(user.name)}
                           </span>
-                          
-                          {/* Animated border on hover */}
-                          <div className="absolute inset-0 rounded-2xl border-2 border-white/30 opacity-0 group-hover/avatar:opacity-100 transition-opacity duration-300"></div>
                         </div>
-                        
-                        {/* Status indicator dot */}
-                        <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 ${avatarStyle.glow} rounded-full border-2 border-white shadow-lg animate-pulse`}></div>
+                        {/* Status indicator */}
+                        <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white"></div>
                       </div>
                       
                       <div className="min-w-0 flex-1">
-                        <div className="text-base font-bold text-gray-900 truncate group-hover:text-indigo-600 transition-colors" title={user.name}>
+                        <div className="text-base font-bold text-slate-900 truncate" title={user.name}>
                           {user.name}
                         </div>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className="text-xs text-gray-500">ID: #{index + 1}</span>
-                          <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">Active</span>
+                          <span className="text-xs text-slate-600 font-semibold">ID: #{index + 1}</span>
+                          <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-lg font-semibold border border-emerald-200">Active</span>
                         </div>
                       </div>
                     </div>
                   </td>
+                  
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-2">
-                      <Shield className="text-indigo-500 flex-shrink-0" size={16} />
+                      <Shield className="text-blue-500 flex-shrink-0" size={16} strokeWidth={2.5} />
                       <span 
-                        className="text-sm font-mono bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 px-3 py-2 rounded-lg font-semibold border border-indigo-100 truncate max-w-xs hover:border-indigo-300 transition-colors"
+                        className="text-sm font-mono bg-slate-50 text-slate-700 px-3 py-2 rounded-lg font-semibold border border-slate-200 truncate max-w-xs"
                         title={user.username}
                       >
                         {user.username}
                       </span>
                     </div>
                   </td>
+                  
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-2 min-w-0">
-                      <Mail className="text-gray-400 flex-shrink-0" size={16} />
+                      <Mail className="text-slate-500 flex-shrink-0" size={16} strokeWidth={2.5} />
                       <a 
                         href={`mailto:${user.email}`}
-                        className="text-sm hover:text-indigo-600 transition-colors hover:underline truncate"
+                        className="text-sm text-slate-700 hover:text-blue-600 transition-colors hover:underline truncate font-medium"
                         title={user.email}
                       >
                         {user.email}
                       </a>
                     </div>
                   </td>
+                  
                   <td className="px-8 py-6">
                     <div className="flex justify-center gap-2">
                       <button
                         onClick={() => onEditClick(user)}
-                        className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-xl transition-all duration-200 text-sm font-bold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 whitespace-nowrap"
+                        className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl transition-all duration-200 text-sm font-bold shadow-md border border-blue-500/20"
                         title="Chỉnh sửa thông tin"
+                        style={{ boxShadow: '0 4px 12px rgba(59, 130, 246, 0.25)' }}
                       >
-                        <Edit size={18} className="flex-shrink-0" />
+                        <Edit size={16} strokeWidth={2.5} />
                         <span>Sửa</span>
                       </button>
                       <button
                         onClick={() => onDisableClick(user)}
-                        className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl transition-all duration-200 text-sm font-bold shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 whitespace-nowrap"
+                        className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-br from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-xl transition-all duration-200 text-sm font-bold shadow-md border border-red-500/20"
                         title="Vô hiệu hóa tài khoản"
+                        style={{ boxShadow: '0 4px 12px rgba(239, 68, 68, 0.25)' }}
                       >
-                        <UserX size={18} className="flex-shrink-0" />
+                        <UserX size={16} strokeWidth={2.5} />
                         <span>Vô hiệu hóa</span>
                       </button>
                     </div>

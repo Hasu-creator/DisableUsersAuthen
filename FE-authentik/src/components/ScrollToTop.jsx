@@ -30,13 +30,18 @@ const ScrollToTop = () => {
   return (
     <button
       onClick={scrollToTop}
-      className={`fixed bottom-8 right-8 w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 text-white rounded-full shadow-lg hover:shadow-xl hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center z-50 ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16 pointer-events-none'
+      className={`fixed bottom-6 right-6 p-3.5 bg-gradient-to-br from-blue-600 to-blue-700 text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 z-50 border border-blue-500/20 ${
+        isVisible 
+          ? 'opacity-100 translate-y-0' 
+          : 'opacity-0 translate-y-4 pointer-events-none'
       }`}
       aria-label="Lên đầu trang"
       title="Lên đầu trang"
+      style={{
+        boxShadow: '0 8px 24px rgba(59, 130, 246, 0.35), 0 4px 8px rgba(0, 0, 0, 0.1)'
+      }}
     >
-      <ArrowUp size={24} strokeWidth={2.5} />
+      <ArrowUp size={20} strokeWidth={2.5} />
     </button>
   );
 };

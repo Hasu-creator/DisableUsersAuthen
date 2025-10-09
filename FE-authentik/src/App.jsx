@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Ban } from 'lucide-react';
+import { Users, Ban, AlertCircle } from 'lucide-react';
 
 // Components
 import Header from './components/Header';
@@ -21,7 +21,7 @@ import { useNotification } from './hooks/useNotification';
 
 // Handlers
 import { handleDisableUser, handleActivateUser, handleEditUser } from './handlers/userActionsHandler';
-import { handleExportHistory, handleExportAuditJSON, handleExportAuditCSV } from './handlers/exportHandlers';
+import { handleExportAuditJSON, handleExportAuditCSV } from './handlers/exportHandlers';
 
 // Services
 import { historyService, auditService } from './services';
@@ -33,7 +33,7 @@ function App() {
   const [history, setHistory] = useState([]);
   const [auditLogs, setAuditLogs] = useState([]);
 
-  // Custom hooks - không cần truyền activeTab vào useUsers nữa
+  // Custom hooks
   const { 
     users, 
     setUsers, 
@@ -94,7 +94,7 @@ function App() {
       setHistory,
       setAuditLogs,
       setUsers,
-      setInactiveUsers, // ✅ Thêm để cập nhật danh sách inactive
+      setInactiveUsers,
       closeModal: closeAllModals,
     });
   };
@@ -107,7 +107,7 @@ function App() {
       showNotification,
       setHistory,
       setAuditLogs,
-      setUsers, // ✅ Thêm để cập nhật danh sách active
+      setUsers,
       setInactiveUsers,
       closeModal: closeAllModals,
     });
@@ -128,7 +128,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 p-4 md:p-8">
+    <div className="min-h-screen bg-slate-50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <Header 
@@ -152,20 +152,20 @@ function App() {
         />
 
         {/* Tab Navigation */}
-        <div className="bg-white rounded-2xl shadow-lg p-2 mb-8 border border-gray-100">
-          <div className="flex gap-2">
+        <div className="bg-white rounded-lg shadow-sm p-1 mb-6 border border-gray-200">
+          <div className="flex gap-1">
             <button
               onClick={() => setActiveTab('active')}
-              className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold text-base transition-all duration-200 ${
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-colors ${
                 activeTab === 'active'
-                  ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg'
-                  : 'text-gray-600 hover:bg-gray-100'
+                  ? 'bg-blue-600 text-white'
+                  : 'text-slate-600 hover:bg-slate-50'
               }`}
             >
-              <Users size={20} />
+              <Users size={18} />
               Tài khoản hoạt động
-              <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                activeTab === 'active' ? 'bg-white bg-opacity-20' : 'bg-gray-200'
+              <span className={`px-2 py-0.5 rounded text-xs font-bold ${
+                activeTab === 'active' ? 'bg-white bg-opacity-20' : 'bg-slate-200'
               }`}>
                 {users.length}
               </span>
@@ -173,16 +173,16 @@ function App() {
             
             <button
               onClick={() => setActiveTab('inactive')}
-              className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold text-base transition-all duration-200 ${
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold transition-colors ${
                 activeTab === 'inactive'
-                  ? 'bg-gradient-to-r from-gray-600 to-gray-700 text-white shadow-lg'
-                  : 'text-gray-600 hover:bg-gray-100'
+                  ? 'bg-slate-700 text-white'
+                  : 'text-slate-600 hover:bg-slate-50'
               }`}
             >
-              <Ban size={20} />
-              Tài khoản bị vô hiệu hóa
-              <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                activeTab === 'inactive' ? 'bg-white bg-opacity-20' : 'bg-gray-200'
+              <Ban size={18} />
+              Tài khoản vô hiệu hóa
+              <span className={`px-2 py-0.5 rounded text-xs font-bold ${
+                activeTab === 'inactive' ? 'bg-white bg-opacity-20' : 'bg-slate-200'
               }`}>
                 {inactiveUsers.length}
               </span>
@@ -219,16 +219,14 @@ function App() {
 
         {/* Footer */}
         <div className="mt-8 text-center">
-          <div className="inline-block bg-white rounded-2xl shadow-lg border border-gray-100 px-8 py-6 max-w-3xl">
-            <div className="flex items-start gap-4">
-              <div className="bg-amber-100 p-2 rounded-lg flex-shrink-0">
-                <svg className="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
+          <div className="inline-block bg-white rounded-xl shadow-lg border-2 border-slate-200 px-6 py-4 max-w-3xl">
+            <div className="flex items-start gap-3">
+              <div className="bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 p-2.5 rounded-xl flex-shrink-0 shadow-md" style={{ boxShadow: '0 4px 12px rgba(245, 158, 11, 0.35)' }}>
+                <AlertCircle className="text-white" size={22} strokeWidth={2.5} />
               </div>
               <div className="text-left">
-                <p className="font-bold text-gray-800 text-lg mb-2">Lưu ý quan trọng</p>
-                <p className="text-gray-600 text-sm leading-relaxed">
+                <p className="font-bold text-slate-900 mb-1.5 text-base">Lưu ý quan trọng</p>
+                <p className="text-slate-700 text-sm leading-relaxed font-medium">
                   {activeTab === 'active' 
                     ? 'Chỉ vô hiệu hóa tài khoản khi nhân viên đã hoàn tất đầy đủ thủ tục nghỉ việc và bàn giao công việc.'
                     : 'Chỉ kích hoạt lại tài khoản khi nhân viên quay lại làm việc và được phê duyệt bởi quản lý.'
@@ -238,12 +236,11 @@ function App() {
             </div>
           </div>
           
-          <p className="text-gray-500 text-xs mt-4">
+          <p className="text-slate-600 text-xs mt-5 font-semibold">
             © 2025 Hệ thống quản lý tài khoản - Phòng Nhân sự
           </p>
         </div>
       </div>
-
       {/* Scroll to Top Button */}
       <ScrollToTop />
 

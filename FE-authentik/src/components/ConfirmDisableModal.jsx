@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AlertCircle, UserX, Loader2, Calendar, FileText, X, User, Mail, Shield } from 'lucide-react';
+import { AlertCircle, UserX, Loader2, Calendar, FileText, X } from 'lucide-react';
 
 export default function ConfirmDisableModal({ user, onConfirm, onCancel, isProcessing }) {
   const [reason, setReason] = useState('');
@@ -41,112 +41,90 @@ export default function ConfirmDisableModal({ user, onConfirm, onCancel, isProce
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
-      <div className="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto transform animate-slideUp">
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border-2 border-slate-200 max-h-[90vh] overflow-y-auto" style={{ boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)' }}>
         {/* Header */}
-        <div className="bg-gradient-to-r from-orange-500 to-red-500 p-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -mr-32 -mt-32"></div>
-          <div className="relative z-10 flex items-start justify-between">
-            <div className="flex items-center gap-4">
-              <div className="bg-white bg-opacity-20 backdrop-blur-sm p-3 rounded-xl">
-                <AlertCircle className="text-white" size={32} />
+        <div className="bg-gradient-to-r from-red-600 to-red-700 px-6 py-5 relative overflow-hidden sticky top-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-red-500/20 to-transparent"></div>
+          <div className="relative flex items-start justify-between">
+            <div className="flex items-center gap-3">
+              <div className="bg-white/20 backdrop-blur-sm p-3 rounded-xl border border-white/30 shadow-lg">
+                <AlertCircle className="text-white" size={26} strokeWidth={2.5} />
               </div>
               <div>
-                <h2 className="text-3xl font-bold text-white">Xác nhận vô hiệu hóa</h2>
-                <p className="text-orange-100 text-sm mt-1">Vui lòng kiểm tra kỹ thông tin trước khi xác nhận</p>
+                <h2 className="text-xl font-bold text-white mb-1">Xác nhận vô hiệu hóa</h2>
+                <p className="text-red-100 text-sm font-medium">Vui lòng kiểm tra kỹ thông tin</p>
               </div>
             </div>
             <button
               onClick={onCancel}
               disabled={isProcessing}
-              className="bg-white bg-opacity-20 hover:bg-opacity-30 backdrop-blur-sm text-white p-2 rounded-lg transition-all duration-200 disabled:opacity-50"
+              className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors border border-white/30 disabled:opacity-50 flex-shrink-0"
             >
-              <X size={24} />
+              <X className="text-white" size={20} strokeWidth={2.5} />
             </button>
           </div>
         </div>
 
-        <div className="p-8 space-y-6">
-          {/* User Info Card */}
-          <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 border-2 border-indigo-100 rounded-2xl p-6 shadow-inner">
-            <h3 className="font-bold text-indigo-900 mb-4 text-lg">Thông tin nhân viên</h3>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <User className="text-white" size={20} />
-                </div>
-                <div className="flex-1">
-                  <p className="text-xs text-gray-600">Họ và tên</p>
-                  <p className="font-bold text-gray-900">{user.name}</p>
-                </div>
+        {/* Content */}
+        <div className="p-6 space-y-4">
+          {/* User Info */}
+          <div className="bg-gradient-to-r from-slate-50 to-slate-50/50 border-2 border-slate-200 rounded-xl p-4">
+            <p className="text-sm text-slate-700 font-semibold mb-2">Tài khoản sẽ được vô hiệu hóa:</p>
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-red-600 rounded-xl flex items-center justify-center text-white font-bold shadow-md flex-shrink-0">
+                {user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()}
               </div>
-
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
-                  <Shield className="text-white" size={20} />
-                </div>
-                <div className="flex-1">
-                  <p className="text-xs text-gray-600">Username</p>
-                  <p className="font-mono font-bold text-gray-900 bg-white px-3 py-1 rounded-lg inline-block">
-                    {user.username}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-red-600 rounded-lg flex items-center justify-center">
-                  <Mail className="text-white" size={20} />
-                </div>
-                <div className="flex-1">
-                  <p className="text-xs text-gray-600">Email</p>
-                  <p className="font-semibold text-gray-900">{user.email}</p>
-                </div>
+              <div className="min-w-0">
+                <p className="font-bold text-slate-900 truncate">{user.name}</p>
+                <p className="text-sm text-slate-600 font-mono truncate">{user.username}</p>
               </div>
             </div>
           </div>
 
           {/* Resign Date */}
           <div>
-            <label className="block text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-              <Calendar size={20} className="text-indigo-600" />
+            <label className="flex items-center gap-2 text-sm font-bold text-slate-800 mb-2">
+              <Calendar size={16} strokeWidth={2.5} />
               Ngày nghỉ việc
-              <span className="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded-full font-bold">Bắt buộc</span>
+              <span className="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded font-semibold">Bắt buộc</span>
             </label>
             <input
               type="date"
               value={resignDate}
               onChange={(e) => setResignDate(e.target.value)}
               max={getMaxDate()}
-              className="w-full px-6 py-4 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 outline-none transition-all duration-200 text-gray-900 font-medium"
-              required
+              disabled={isProcessing}
+              className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-300 rounded-xl focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-100 text-slate-900 font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
             />
-            <p className="text-xs text-gray-500 mt-2">
-              💡 Có thể chọn ngày trong tương lai (tối đa 2 tháng) cho trường hợp nghỉ việc theo lịch
+            <p className="text-xs text-slate-500 mt-2">
+              Có thể chọn ngày trong tương lai (tối đa 2 tháng)
             </p>
           </div>
 
           {/* Reason */}
           <div>
-            <label className="block text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-              <FileText size={20} className="text-indigo-600" />
+            <label className="flex items-center gap-2 text-sm font-bold text-slate-800 mb-2">
+              <FileText size={16} strokeWidth={2.5} />
               Lý do nghỉ việc
-              <span className="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded-full font-bold">Bắt buộc</span>
+              <span className="bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded font-semibold">Bắt buộc</span>
             </label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-[200px] overflow-y-auto pr-2">
               {reasons.map((r) => (
                 <button
                   key={r.value}
                   type="button"
                   onClick={() => setReason(r.value)}
-                  className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all duration-200 text-left ${
+                  disabled={isProcessing}
+                  className={`flex items-center gap-3 p-3 rounded-lg border-2 transition-all text-left font-medium disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 ${
                     reason === r.value
-                      ? 'border-indigo-500 bg-gradient-to-r from-indigo-50 to-purple-50 shadow-lg'
-                      : 'border-gray-200 bg-white hover:border-indigo-300 hover:bg-gray-50'
+                      ? 'border-red-500 bg-red-50'
+                      : 'border-slate-200 bg-white hover:border-slate-300'
                   }`}
                 >
-                  <span className="text-2xl">{r.icon}</span>
-                  <span className={`text-sm font-medium ${
-                    reason === r.value ? 'text-indigo-900' : 'text-gray-700'
+                  <span className="text-lg flex-shrink-0">{r.icon}</span>
+                  <span className={`text-sm ${
+                    reason === r.value ? 'text-red-900' : 'text-slate-700'
                   }`}>
                     {r.value}
                   </span>
@@ -157,72 +135,62 @@ export default function ConfirmDisableModal({ user, onConfirm, onCancel, isProce
 
           {/* Note */}
           <div>
-            <label className="block text-sm font-bold text-gray-800 mb-3">
+            <label className="text-sm font-bold text-slate-800 mb-2 block">
               Ghi chú thêm
-              <span className="ml-2 text-xs text-gray-500 font-normal">(Không bắt buộc)</span>
+              <span className="ml-2 text-xs text-slate-500 font-normal">(Không bắt buộc)</span>
             </label>
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Ví dụ: Đã bàn giao công việc, hoàn tất thủ tục, thanh toán lương..."
-              rows={4}
-              className="w-full px-6 py-4 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-100 outline-none transition-all duration-200 resize-none text-gray-900"
+              disabled={isProcessing}
+              placeholder="Ví dụ: Đã bàn giao công việc, hoàn tất thủ tục..."
+              rows={2}
+              className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-300 rounded-xl focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-100 resize-none text-slate-900 font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
             />
           </div>
 
           {/* Warning */}
-          <div className="bg-gradient-to-r from-red-50 to-orange-50 border-2 border-red-200 rounded-2xl p-6">
-            <div className="flex items-start gap-4">
-              <div className="bg-red-100 p-2 rounded-lg flex-shrink-0">
-                <AlertCircle className="text-red-600" size={24} />
-              </div>
-              <div className="flex-1">
-                <p className="font-bold text-red-900 mb-3 text-lg">⚠️ Cảnh báo quan trọng</p>
-                <ul className="space-y-2 text-sm text-red-800">
-                  <li className="flex items-start gap-2">
-                    <span className="text-red-500 font-bold flex-shrink-0">•</span>
-                    <span>Tài khoản sẽ <strong>ngay lập tức bị vô hiệu hóa</strong></span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-red-500 font-bold flex-shrink-0">•</span>
-                    <span>Nhân viên <strong>không thể đăng nhập</strong> vào hệ thống</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-red-500 font-bold flex-shrink-0">•</span>
-                    <span>Hành động này được <strong>ghi lại trong lịch sử</strong></span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-red-500 font-bold flex-shrink-0">•</span>
-                    <span>Đảm bảo nhân viên đã <strong>hoàn tất thủ tục nghỉ việc</strong></span>
-                  </li>
+          <div className="bg-red-50 border-2 border-red-300 rounded-xl p-4">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="text-red-600 flex-shrink-0 mt-0.5" size={22} strokeWidth={2.5} />
+              <div>
+                <p className="font-bold text-red-900 mb-2">Cảnh báo quan trọng</p>
+                <ul className="text-xs text-red-800 space-y-1 font-medium">
+                  <li>• Tài khoản sẽ ngay lập tức bị vô hiệu hóa</li>
+                  <li>• Nhân viên không thể đăng nhập vào hệ thống</li>
+                  <li>• Hành động này được ghi lại trong lịch sử</li>
+                  <li>• Đảm bảo nhân viên đã hoàn tất thủ tục</li>
                 </ul>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Footer Buttons */}
-        <div className="bg-gray-50 px-8 py-6 border-t border-gray-200 flex gap-4 justify-end rounded-b-3xl">
+        {/* Actions */}
+        <div className="flex gap-3 p-6 pt-2 bg-slate-50 border-t border-slate-200 sticky bottom-0">
           <button
+            type="button"
             onClick={onCancel}
             disabled={isProcessing}
-            className="px-8 py-4 bg-white border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-100 hover:border-gray-400 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-bold text-base shadow-sm hover:shadow"
+            className="flex-1 px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl transition-all duration-200 font-bold disabled:opacity-50 disabled:cursor-not-allowed border-2 border-slate-200"
           >
             Hủy bỏ
           </button>
           <button
+            type="button"
             onClick={handleSubmit}
             disabled={isProcessing || !reason || !resignDate}
-            className="px-8 py-4 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-bold text-base flex items-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
+            className="flex-1 px-5 py-3 bg-gradient-to-br from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white rounded-xl transition-all duration-200 font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg border border-red-500/20"
+            style={{ boxShadow: '0 4px 16px rgba(220, 38, 38, 0.4)' }}
           >
             {isProcessing ? (
               <>
-                <Loader2 className="animate-spin" size={20} />
+                <Loader2 className="animate-spin" size={18} strokeWidth={2.5} />
                 Đang xử lý...
               </>
             ) : (
               <>
-                <UserX size={20} />
+                <UserX size={18} strokeWidth={2.5} />
                 Xác nhận vô hiệu hóa
               </>
             )}
