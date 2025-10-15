@@ -12,6 +12,7 @@ from authentik_client import (
     edit_user_in_authentik
 )
 
+
 app = FastAPI(
     title="Authentik User Management API",
     description="API quản lý người dùng Authentik với filter admin users",
